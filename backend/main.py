@@ -284,6 +284,7 @@ def analyze_ingredients():
         data = request.get_json()
         cereal_name = data.get('cereal_name')
         ingredients = data.get('ingredients')
+        generate_video = data.get('generate_video', True)  # New parameter
         
         if not cereal_name or not ingredients:
             return jsonify({
@@ -296,12 +297,30 @@ def analyze_ingredients():
         # Perform analysis
         analysis = ingredient_analyzer.analyze_ingredients(cereal_name, ingredients)
         
-        return jsonify({
+        result = {
             'success': True,
             'cereal_name': cereal_name,
             'ingredients': ingredients,
             'analysis': analysis
-        })
+        }
+        
+        # Generate video explanation with D-ID
+        if generate_video:
+            try:
+                from backend.video_generator import VideoGenerator
+                video_gen = VideoGenerator()
+                video_result = video_gen.create_explanation_video(analysis, cereal_name)
+                result['video'] = video_result
+            except Exception as e:
+                print(f"⚠️  Video generation failed: {str(e)}")
+                result['video'] = {
+                    'success': False,
+                    'error': str(e),
+                    'script': '',
+                    'type': 'video'
+                }
+        
+        return jsonify(result)
         
     except Exception as e:
         return jsonify({

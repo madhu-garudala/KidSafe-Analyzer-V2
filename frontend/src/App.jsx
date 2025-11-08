@@ -3,6 +3,7 @@ import Header from './components/Header';
 import APIConfig from './components/APIConfig';
 import CerealSelector from './components/CerealSelector';
 import AnalysisResults from './components/AnalysisResults';
+import CharacterVideo from './components/CharacterVideo';
 import Chatbot from './components/Chatbot';
 import { checkSystemStatus } from './services/api';
 import './App.css';
@@ -67,6 +68,12 @@ function App() {
           
           {analysisResult && (
             <>
+              {analysisResult.video && (
+                <CharacterVideo 
+                  videoData={analysisResult.video}
+                  productName={analysisResult.cereal_name}
+                />
+              )}
               <AnalysisResults result={analysisResult} />
               <Chatbot 
                 cerealName={analysisResult.cereal_name}
